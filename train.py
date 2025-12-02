@@ -23,10 +23,8 @@ train_ds, test_ds = random_split(
 train_loader = DataLoader(train_ds, batch_size=32, shuffle=True)
 test_loader = DataLoader(test_ds, batch_size=32)
 
-# ---- MODEL ----
 model = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
 
-# Unfreeze last 2 blocks
 for name, param in model.named_parameters():
     if "layer4" in name or "fc" in name:
         param.requires_grad = True
@@ -36,7 +34,7 @@ for name, param in model.named_parameters():
 model.fc = nn.Linear(512, 2)
 model = model.to(device)
 
-# ---- CLASS WEIGHTS ----
+
 real_count = len([l for l in dataset.labels if l == 0])
 fake_count = len([l for l in dataset.labels if l == 1])
 weights = torch.tensor([1.0 / real_count, 1.0 / fake_count]).to(device)
@@ -72,7 +70,7 @@ for epoch in range(epochs):
     scheduler.step()
     print(f"Epoch {epoch+1}/{epochs} Loss: {running_loss/len(train_loader):.4f}")
 
-# ---- TESTING ----
+
 model.eval()
 correct = 0
 total = 0
