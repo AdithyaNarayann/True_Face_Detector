@@ -5,7 +5,7 @@ from PIL import Image
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = models.resnet18(weights=None)
-model.fc = nn.Linear(512, 2)
+model.fc = torch.nn.Linear(512, 2)
 model.load_state_dict(torch.load("model/real_fake_model.pth", map_location=device))
 model.to(device)
 model.eval()
