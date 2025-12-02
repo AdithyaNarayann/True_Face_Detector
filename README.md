@@ -4,7 +4,6 @@
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.5-red)](https://pytorch.org/)
 [![License-MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
-[![Accuracy-68.22%25-yellow](https://img.shields.io/badge/Accuracy-68.22%25-yellow)](#results)
 
 ---
 
@@ -78,6 +77,41 @@ README.md
 - Random Gaussian Blur (p=0.3)
 - ImageNet normalization
 
+---
+
+## 🗂 Dataset
+
+**Dataset used to fine-tune this model:** CIPLAb Real and Fake Face Detection Dataset
+
+- **Source:** Kaggle — https://www.kaggle.com/datasets/ciplab/real-and-fake-face-detection
+- **Description:**
+	- **Real Faces** — authentic, unaltered human face images (various poses, lighting and backgrounds).
+	- **Fake Faces** — manipulated / forged faces produced using morphing, distortion or other synthetic manipulation techniques.
+- **Usage in this project:** the dataset was organized into two folders (`real/` and `fake/`) and loaded via `dataset.py`'s `RealFakeDataset` class for training and evaluation.
+
+Recommended local folder layout for training (used by `train.py`):
+
+```
+real_fake/
+├─ real/    # all authentic face images
+├─ fake/    # all manipulated / forged images
+```
+
+Please refer to the Kaggle page for dataset licensing, download instructions and dataset statistics.
+
+---
+
+## 🏁 Results
+
+- **Final test accuracy (reported):** **68.22%**
+
+Brief notes:
+- Evaluation used an 80/20 train/test split generated in `train.py` (`random_split` with seed 42).
+- Class-weighted `CrossEntropyLoss` was used to reduce class imbalance effects; augmentations were applied during training.
+- This result is a reasonable baseline using ResNet-18 with partial fine-tuning; there is room for improvement with additional data, validation-based checkpointing, and model tuning.
+
+---
+
 
 ---
 
@@ -136,9 +170,20 @@ The function returns `"REAL"` or `"FAKE"`.
 
 ## ✅ Practical Tips
 
-- Keep your `real_fake/` dataset organized and balanced where possible.
-- If you have a GPU, training will be substantially faster; AMP is already enabled.
-- Use `requirements.txt` for reproducible installs (you've already generated it).
+- Keep `real_fake/` organized and aim for class balance; the training uses class-weighted loss but oversampling can help when imbalance is severe.
+- Use `requirements.txt` for reproducible installs and prefer a GPU for training (AMP is enabled in `train.py`).
+
+---
+## 📜 License
+
+---
+
+## 🔧 Future Improvements
+
+- Add a validation split and checkpointing to save the best model by validation accuracy instead of final epoch weights.
+- Report per-class metrics (precision, recall, F1) and plot a confusion matrix to identify error modes.
+- Experiment with stronger backbones (ResNet-50, EfficientNet) or unfreeze additional layers for deeper fine-tuning.
+- Address class imbalance more aggressively (oversampling, focal loss) or ensemble multiple fine-tuned models.
 
 ---
 
