@@ -20,13 +20,15 @@ train_loader = DataLoader(train_ds, batch_size=16, shuffle=True)
 test_loader = DataLoader(test_ds, batch_size=16)
 
 model = models.resnet18(pretrained=True)
+for param in model.parameters():
+    param.requires_grad = False
 model.fc = nn.Linear(512, 2)   
 model = model.to(device)
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=1e-4)
+optimizer = optim.Adam(model.fc.parameters(), lr=1e-4)
 
-epochs = 5
+epochs = 10
 
 for epoch in range(epochs):
     model.train()
@@ -46,7 +48,7 @@ for epoch in range(epochs):
 
     print(f"Epoch {epoch+1}/{epochs} Loss: {running_loss/len(train_loader):.4f}")
 
-    model.eval()
+model.eval()
 correct = 0
 total = 0
 
