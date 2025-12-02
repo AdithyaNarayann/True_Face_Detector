@@ -15,17 +15,8 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-
 real_fake/
 
 checkpoint.pth
-*.pth
-real_fake/
-
-*.pth
-*.pt
-*.ckpt
-*.bin
-*.onnx
 
 test/
