@@ -28,4 +28,4 @@ def predict(img_path):
 
     return "REAL" if pred.item() == 0 else "FAKE"
 
-print(predict("test.jpg"))
+print(predict("real_00015.jpg"))
