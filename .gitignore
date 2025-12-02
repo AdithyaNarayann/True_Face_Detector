@@ -15,8 +15,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# 🔐 Environment files
-.env
 
 real_fake/
 
@@ -29,3 +27,5 @@ real_fake/
 *.ckpt
 *.bin
 *.onnx
+
+test/

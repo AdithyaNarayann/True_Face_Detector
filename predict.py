@@ -6,7 +6,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = models.resnet18(weights=None)
 model.fc = nn.Linear(512, 2)
-model.load_state_dict(torch.load("real_fake_model.pth", map_location=device))
+model.load_state_dict(torch.load("model/real_fake_model.pth", map_location=device))
 model.to(device)
 model.eval()
 
@@ -27,4 +27,4 @@ def predict(img_path):
 
     return "REAL" if pred.item() == 0 else "FAKE"
 
-print(predict("real_00015.jpg"))
+print(predict("test/real_00015.jpg"))

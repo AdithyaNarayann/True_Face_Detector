@@ -89,5 +89,5 @@ with torch.no_grad():
 accuracy = 100 * correct / total
 print(f"Test Accuracy: {accuracy:.2f}%")
 
-torch.save(model.state_dict(), "real_fake_model.pth")
+torch.save(model.state_dict(), "model/real_fake_model.pth")
 print("Model saved.")
