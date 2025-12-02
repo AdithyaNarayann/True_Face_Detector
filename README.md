@@ -1,122 +1,130 @@
 # 🦾 True Face Detector
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
-![PyTorch](https://img.shields.io/badge/PyTorch-2.5-red)
-![License](https://img.shields.io/badge/License-MIT-green)
+<!-- header badges -->
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.5-red)](https://pytorch.org/)
+[![License-MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-True Face Detector is a compact, transfer-learning based image classifier that distinguishes between REAL and FAKE faces. It uses a fine-tuned ResNet-18 backbone and practical image augmentations to achieve robust performance on small-to-medium datasets.
+---
 
-## 🚀 Highlights
-- **Model:** ResNet-18 (transfer learning, only last blocks and classifier trained)
-- **Saved model:** `model/real_fake_model.pth`
-- **Inference:** `predict.py` — single-image predictor that returns `REAL` or `FAKE`
-- **Training script:** `train.py` — uses mixed-precision (AMP), class-weighted loss, scheduler, and data augmentations
+## ✨ Overview
+
+True Face Detector is a compact, transfer-learning image classifier that identifies whether a face image is REAL or FAKE. It's built with PyTorch and uses a fine-tuned ResNet-18 backbone together with practical augmentations for reliable performance on modest datasets.
+
+---
+
+## 🎯 Quick Highlights
+
+- **Project name:** True Face Detector
+- **Model:** ResNet-18 (transfer learning — fine-tuned `layer4` + classifier)
+- **Saved weights:** `model/real_fake_model.pth`
+- **Test accuracy (reported):** `68.22%`
+- **Train script:** `train.py` (AMP, class-weighted loss, scheduler)
+- **Predict script:** `predict.py` (returns `REAL` or `FAKE`)
 - **Dataset layout:** `real_fake/real/*` and `real_fake/fake/*`
 
-## 📁 Repository Structure
+---
 
-- `dataset.py` — custom `RealFakeDataset` with augmentations.
-- `train.py` — training loop (transfer learning + AMP + scheduler).
-- `predict.py` — loads the saved model and performs inference on an image.
-- `model/real_fake_model.pth` — trained model weights (ResNet-18 classifier).
-- `real_fake/` — expected dataset folder containing `real/` and `fake/` subfolders.
-- `test/` — example/test images.
+## 📂 Repo Layout
 
-## 🧠 Model & Training Summary
+- `dataset.py` — `RealFakeDataset` (augmentations & transforms)
+- `train.py` — training loop, mixed precision, scheduler, saves `model/real_fake_model.pth`
+- `predict.py` — single-image inference
+- `model/` — contains model checkpoint
+- `real_fake/` — dataset folder (required for training)
+- `test/` — sample images to try inference
+- `requirements.txt` — pinned environment (use `pip install -r requirements.txt`)
 
-- Architecture: ResNet-18 from `torchvision.models` with the final fully-connected layer replaced by `Linear(512, 2)`.
-- Transfer learning: All parameters frozen except `layer4` and `fc` (only these are trainable).
-- Loss: `CrossEntropyLoss` with class weights inversely proportional to class counts.
-- Optimizer: `Adam` with `lr=1e-4`.
-- Scheduler: `StepLR(step_size=5, gamma=0.5)`.
-- Mixed precision training: `torch.cuda.amp` (`GradScaler` + `autocast`).
-- Epochs: `15` (in `train.py`).
-- Batch size: `32`.
+---
 
-### Augmentations (in `dataset.py`)
+## 🧠 Model & Training Details
 
-- Resize to 224x224
+- **Architecture:** ResNet-18 from `torchvision.models` with final layer `Linear(512, 2)`.
+- **Transfer learning strategy:** Freeze early layers; only `layer4` and `fc` are trainable.
+- **Loss:** `CrossEntropyLoss` with class weights (inverse of class counts).
+- **Optimizer:** `Adam`, `lr=1e-4`.
+- **Scheduler:** `StepLR(step_size=5, gamma=0.5)`.
+- **Mixed precision:** `torch.cuda.amp` (`GradScaler` + `autocast`) for faster GPU training.
+- **Epochs / Batch:** 15 epochs, batch size 32 (from `train.py`).
+
+**Reported final test accuracy:** 68.22% (printed by the training script after evaluation).
+
+### Augmentations (from `dataset.py`)
+
+- Resize to 224×224
 - Random Horizontal Flip
-- Random Rotation (±10°)
-- Color Jitter (brightness, contrast, saturation)
-- Random Gaussian Blur (applied with probability 0.3)
-- Normalization using ImageNet mean/std
+- Random Rotation ±10°
+- Color Jitter (brightness / contrast / saturation)
+- Random Gaussian Blur (p=0.3)
+- ImageNet normalization
 
-## ⚙️ Installation
+---
 
-Create a virtual environment and install the essentials. On Windows PowerShell:
+## ⚙️ Install (quick)
+
+Install dependencies from `requirements.txt` (you already generated this file):
 
 ```powershell
 python -m venv env
 .\env\Scripts\Activate.ps1
 pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+If you prefer to install only essentials (CPU/GPU choice):
+
+```powershell
 pip install torch torchvision pillow
 ```
 
-Notes:
-- If you have a CUDA-capable GPU, install the matching `torch`/`torchvision` build from https://pytorch.org.
-- You can also install any extras you prefer (e.g., `tqdm`, `matplotlib`) for progress bars and visualization.
+---
 
-## ▶️ Training
+## ▶️ Training (one-liner)
 
-Ensure your dataset follows the layout:
-
-```
-real_fake/
-  ├─ real/
-  └─ fake/
-```
-
-Train the model:
+Make sure your dataset is placed at `real_fake/` with `real/` and `fake/` subfolders. Then run:
 
 ```powershell
 python train.py
 ```
 
-Training output:
-- Prints device used (CPU/GPU)
-- Progress by epoch (loss)
-- Final test accuracy printed and weights saved to `model/real_fake_model.pth`
+Logs:
+- Device used (CPU/GPU)
+- Per-epoch loss
+- Final test accuracy and saved model at `model/real_fake_model.pth`
+
+---
 
 ## 🧪 Inference
 
-Quick single-image prediction with `predict.py`. Example usage:
+To run the bundled example prediction:
 
 ```powershell
 python predict.py
-# or call the `predict(img_path)` function from the module in your own script
 ```
 
-The script prints `REAL` or `FAKE` depending on the model prediction.
-
-## 📌 Example: use `predict()` inside Python
+To use the `predict()` function from your code:
 
 ```python
 from predict import predict
-print(predict('test/real_00015.jpg'))  # -> 'REAL' or 'FAKE'
+print(predict('test/real_00015.jpg'))
 ```
 
-## ✅ Tips & Best Practices
+The function returns `"REAL"` or `"FAKE"`.
 
-- Balance the dataset: the training uses class weights, but if classes are extremely imbalanced consider oversampling or additional augmentation.
-- Fine-tuning: you can unfreeze more layers (e.g., `layer3`) for better accuracy if you have more data.
-- Increase epochs and add validation checkpointing for production-quality models.
-- Use a dedicated `requirements.txt` if you want reproducible installs.
+---
 
-## 🔭 Next Steps / Improvements
+## ✅ Practical Tips
 
-- Add a cleaner CLI for inference (image folder, webcam capture).
-- Add evaluation metrics (precision, recall, F1) and confusion matrix plot.
-- Add training checkpointing and best-model saving by validation accuracy.
-- Convert to ONNX or TorchScript for faster deployment.
+- Keep your `real_fake/` dataset organized and balanced where possible.
+- If you have a GPU, training will be substantially faster; AMP is already enabled.
+- Use `requirements.txt` for reproducible installs (you've already generated it).
+
+---
 
 ## 📜 License
 
-This project is released under the MIT License — see `LICENSE`.
-
-## 🙏 Credits
-
-Built with PyTorch and torchvision. Dataset and model ideas inspired by common transfer-learning practices for small image classifiers.
+MIT — see `LICENSE`.
 
 ---
+
 Made with ❤️ — True Face Detector
