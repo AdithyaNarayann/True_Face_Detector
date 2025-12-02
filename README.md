@@ -1,4 +1,4 @@
-#True Face Detector
+# True Face Detector
 
 <!-- header badges -->
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
@@ -7,13 +7,13 @@
 
 ---
 
-##Overview
+## Overview
 
 True Face Detector is a compact, transfer-learning image classifier that identifies whether a face image is REAL or FAKE. It's built with PyTorch and uses a fine-tuned ResNet-18 backbone together with practical augmentations for reliable performance on modest datasets.
 
 ---
 
-##Quick Highlights
+## Quick Highlights
 
 - **Project name:** True Face Detector
 - **Model:** ResNet-18 (transfer learning — fine-tuned `layer4` + classifier)
@@ -24,7 +24,7 @@ True Face Detector is a compact, transfer-learning image classifier that identif
 
 ---
 
-##Repo Layout
+## Repo Layout
 
 | Path | Purpose |
 |---|---|
@@ -52,7 +52,7 @@ README.md
 
 ---
 
-##Model & Training Details
+## Model & Training Details
 
 | Item | Setting |
 |---|---|
@@ -76,7 +76,7 @@ README.md
 
 ---
 
-##Dataset
+## Dataset
 
 **Dataset used to fine-tune this model:** CIPLAb Real and Fake Face Detection Dataset
 
@@ -98,7 +98,7 @@ Please refer to the Kaggle page for dataset licensing, download instructions and
 
 ---
 
-##Results
+## Results
 
 - **Final test accuracy:** **68.22%**
 
@@ -110,7 +110,7 @@ Brief notes:
 ---
 
 
-##Install
+## Install
 
 Install dependencies from `requirements.txt` (you already generated this file):
 
@@ -129,7 +129,7 @@ pip install torch torchvision pillow
 
 ---
 
-##Training 
+## Training 
 
 Make sure your dataset is placed at `real_fake/` with `real/` and `fake/` subfolders. Then run:
 
@@ -144,7 +144,7 @@ Logs:
 
 ---
 
-##Inference
+## Inference
 
 To run the bundled example prediction:
 
@@ -163,14 +163,14 @@ The function returns `"REAL"` or `"FAKE"`.
 
 ---
 
-##Practical Tips
+## Practical Tips
 
 - Keep `real_fake/` organized and aim for class balance; the training uses class-weighted loss but oversampling can help when imbalance is severe.
 - Use `requirements.txt` for reproducible installs and prefer a GPU for training (AMP is enabled in `train.py`).
 
 ---
 
-##Future Improvements
+## Future Improvements
 
 - Add a validation split and checkpointing to save the best model by validation accuracy instead of final epoch weights.
 - Report per-class metrics (precision, recall, F1) and plot a confusion matrix to identify error modes.
@@ -179,13 +179,13 @@ The function returns `"REAL"` or `"FAKE"`.
 
 ---
 
-##License
+## License
 
 MIT — see `LICENSE`.
 
 ---
 
-###Author
+### Author
 **Adithya Narayan V S**  
 
 *Built to explore face forgery detection using PyTorch through a real-vs-fake image classification task.*
