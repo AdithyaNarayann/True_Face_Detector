@@ -19,3 +19,7 @@ Thumbs.db
 .env
 
 real_fake/
+
+checkpoint.pth
+*.pth
+real_fake/
