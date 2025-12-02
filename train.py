@@ -14,21 +14,41 @@ dataset = RealFakeDataset("real_fake")
 train_size = int(0.8 * len(dataset))
 test_size = len(dataset) - train_size
 
-train_ds, test_ds = random_split(dataset, [train_size, test_size])
+train_ds, test_ds = random_split(
+    dataset,
+    [train_size, test_size],
+    generator=torch.Generator().manual_seed(42)
+)
 
-train_loader = DataLoader(train_ds, batch_size=16, shuffle=True)
-test_loader = DataLoader(test_ds, batch_size=16)
+train_loader = DataLoader(train_ds, batch_size=32, shuffle=True)
+test_loader = DataLoader(test_ds, batch_size=32)
 
-model = models.resnet18(pretrained=True)
-for param in model.parameters():
-    param.requires_grad = False
-model.fc = nn.Linear(512, 2)   
+# ---- MODEL ----
+model = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
+
+# Unfreeze last 2 blocks
+for name, param in model.named_parameters():
+    if "layer4" in name or "fc" in name:
+        param.requires_grad = True
+    else:
+        param.requires_grad = False
+
+model.fc = nn.Linear(512, 2)
 model = model.to(device)
 
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.fc.parameters(), lr=1e-4)
+# ---- CLASS WEIGHTS ----
+real_count = len([l for l in dataset.labels if l == 0])
+fake_count = len([l for l in dataset.labels if l == 1])
+weights = torch.tensor([1.0 / real_count, 1.0 / fake_count]).to(device)
 
-epochs = 10
+criterion = nn.CrossEntropyLoss(weight=weights)
+
+optimizer = optim.Adam(model.parameters(), lr=1e-4)
+scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.5)
+
+scaler = torch.cuda.amp.GradScaler()
+
+epochs = 15
 
 for epoch in range(epochs):
     model.train()
@@ -38,16 +58,21 @@ for epoch in range(epochs):
         imgs, labels = imgs.to(device), labels.to(device)
 
         optimizer.zero_grad()
-        outputs = model(imgs)
-        loss = criterion(outputs, labels)
 
-        loss.backward()
-        optimizer.step()
+        with torch.cuda.amp.autocast():
+            outputs = model(imgs)
+            loss = criterion(outputs, labels)
+
+        scaler.scale(loss).backward()
+        scaler.step(optimizer)
+        scaler.update()
 
         running_loss += loss.item()
 
+    scheduler.step()
     print(f"Epoch {epoch+1}/{epochs} Loss: {running_loss/len(train_loader):.4f}")
 
+# ---- TESTING ----
 model.eval()
 correct = 0
 total = 0
@@ -55,7 +80,6 @@ total = 0
 with torch.no_grad():
     for imgs, labels in test_loader:
         imgs, labels = imgs.to(device), labels.to(device)
-
         outputs = model(imgs)
         _, predicted = torch.max(outputs, 1)
 
@@ -66,10 +90,4 @@ accuracy = 100 * correct / total
 print(f"Test Accuracy: {accuracy:.2f}%")
 
 torch.save(model.state_dict(), "real_fake_model.pth")
-print("Model saved as real_fake_model.pth")
-torch.save({
-    'epoch': epoch,
-    'model_state_dict': model.state_dict(),
-    'optimizer_state_dict': optimizer.state_dict()
-}, 'checkpoint.pth')
-
+print("Model saved.")
