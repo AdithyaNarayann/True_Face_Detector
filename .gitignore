@@ -1,0 +1,21 @@
+# Ignore virtual environment
+env/
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE-specific folders
+.vscode/
+.idea/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# 🔐 Environment files
+.env
+
+real_fake/
