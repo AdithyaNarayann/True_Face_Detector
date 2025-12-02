@@ -18,7 +18,6 @@ True Face Detector is a compact, transfer-learning image classifier that identif
 - **Project name:** True Face Detector
 - **Model:** ResNet-18 (transfer learning — fine-tuned `layer4` + classifier)
 - **Saved weights:** `model/real_fake_model.pth`
-- **Test accuracy (reported):** `68.22%`
 - **Train script:** `train.py` (AMP, class-weighted loss, scheduler)
 - **Predict script:** `predict.py` (returns `REAL` or `FAKE`)
 - **Dataset layout:** `real_fake/real/*` and `real_fake/fake/*`
@@ -66,8 +65,6 @@ README.md
 | Epochs | 15 |
 | Batch size | 32 |
 
-**Reported final test accuracy:** **68.22%**
-
 ### Augmentations (from `dataset.py`)
 
 - Resize to 224×224
@@ -112,8 +109,6 @@ Brief notes:
 
 ---
 
-
----
 
 ## ⚙️ Install (quick)
 
@@ -161,7 +156,7 @@ To use the `predict()` function from your code:
 
 ```python
 from predict import predict
-print(predict('test/real_00015.jpg'))
+print(predict('test/image.jpg'))
 ```
 
 The function returns `"REAL"` or `"FAKE"`.
@@ -172,9 +167,6 @@ The function returns `"REAL"` or `"FAKE"`.
 
 - Keep `real_fake/` organized and aim for class balance; the training uses class-weighted loss but oversampling can help when imbalance is severe.
 - Use `requirements.txt` for reproducible installs and prefer a GPU for training (AMP is enabled in `train.py`).
-
----
-## 📜 License
 
 ---
 
@@ -193,4 +185,6 @@ MIT — see `LICENSE`.
 
 ---
 
-Made with ❤️ — True Face Detector
+### 💡 Author
+**Adithya Narayan V S**  
+*Built to explore face forgery detection using PyTorch through a real-vs-fake image classification task.*
