@@ -4,6 +4,7 @@
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.5-red)](https://pytorch.org/)
 [![License-MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![Accuracy-68.22%25-yellow](https://img.shields.io/badge/Accuracy-68.22%25-yellow)](#results)
 
 ---
 
@@ -27,27 +28,46 @@ True Face Detector is a compact, transfer-learning image classifier that identif
 
 ## 📂 Repo Layout
 
-- `dataset.py` — `RealFakeDataset` (augmentations & transforms)
-- `train.py` — training loop, mixed precision, scheduler, saves `model/real_fake_model.pth`
-- `predict.py` — single-image inference
-- `model/` — contains model checkpoint
-- `real_fake/` — dataset folder (required for training)
-- `test/` — sample images to try inference
-- `requirements.txt` — pinned environment (use `pip install -r requirements.txt`)
+| Path | Purpose |
+|---|---|
+| `dataset.py` | `RealFakeDataset` implementation — augmentations & preprocessing |
+| `train.py` | Training script: uses AMP, scheduler and saves `model/real_fake_model.pth` |
+| `predict.py` | Single-image inference utility — returns `REAL` or `FAKE` |
+| `model/` | Checkpoint storage (`real_fake_model.pth`) |
+| `real_fake/` | Dataset root: `real/` and `fake/` subfolders required for training |
+| `test/` | Example images for quick inference checks |
+| `requirements.txt` | Pinned package list for reproducible environment |
+
+Quick tree view:
+
+```text
+real_fake/
+├─ real/
+├─ fake/
+model/
+requirements.txt
+train.py
+predict.py
+dataset.py
+README.md
+```
 
 ---
 
 ## 🧠 Model & Training Details
 
-- **Architecture:** ResNet-18 from `torchvision.models` with final layer `Linear(512, 2)`.
-- **Transfer learning strategy:** Freeze early layers; only `layer4` and `fc` are trainable.
-- **Loss:** `CrossEntropyLoss` with class weights (inverse of class counts).
-- **Optimizer:** `Adam`, `lr=1e-4`.
-- **Scheduler:** `StepLR(step_size=5, gamma=0.5)`.
-- **Mixed precision:** `torch.cuda.amp` (`GradScaler` + `autocast`) for faster GPU training.
-- **Epochs / Batch:** 15 epochs, batch size 32 (from `train.py`).
+| Item | Setting |
+|---|---|
+| Architecture | ResNet-18 (`torchvision.models`) with final `Linear(512, 2)` |
+| Trainable layers | `layer4`, `fc` (rest frozen for transfer learning) |
+| Loss | `CrossEntropyLoss` with class weights (inverse to class counts) |
+| Optimizer | Adam (`lr=1e-4`) |
+| Scheduler | `StepLR(step_size=5, gamma=0.5)` |
+| Mixed precision | Enabled (`torch.cuda.amp`: `GradScaler` + `autocast`) |
+| Epochs | 15 |
+| Batch size | 32 |
 
-**Reported final test accuracy:** 68.22% (printed by the training script after evaluation).
+**Reported final test accuracy:** **68.22%**
 
 ### Augmentations (from `dataset.py`)
 
@@ -57,6 +77,7 @@ True Face Detector is a compact, transfer-learning image classifier that identif
 - Color Jitter (brightness / contrast / saturation)
 - Random Gaussian Blur (p=0.3)
 - ImageNet normalization
+
 
 ---
 
